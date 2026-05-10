@@ -39,6 +39,13 @@ from app.schemas.calculation import CalculationBase, CalculationResponse, Calcul
 from app.schemas.token import TokenResponse  # API token schema
 from app.schemas.user import UserCreate, UserResponse, UserLogin  # User schemas
 from app.database import Base, get_db, engine  # Database connection
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 # ------------------------------------------------------------------------------
@@ -93,6 +100,7 @@ def read_index(request: Request):
     
     Displays the welcome page with links to register and login.
     """
+    logger.info("inside index /")
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/login", response_class=HTMLResponse, tags=["web"])
@@ -102,6 +110,7 @@ def login_page(request: Request):
     
     Displays a form for users to enter credentials and log in.
     """
+    logger.info("inside login_page")
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/register", response_class=HTMLResponse, tags=["web"])
@@ -111,6 +120,7 @@ def register_page(request: Request):
     
     Displays a form for new users to create an account.
     """
+    logger.info("inside register_page")
     return templates.TemplateResponse("register.html", {"request": request})
 
 @app.get("/dashboard", response_class=HTMLResponse, tags=["web"])
@@ -125,6 +135,7 @@ def dashboard_page(request: Request):
     
     JavaScript in this page calls the API endpoints to fetch and display data.
     """
+    logger.info("inside dashboard_page")
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
 @app.get("/dashboard/view/{calc_id}", response_class=HTMLResponse, tags=["web"])
@@ -142,6 +153,7 @@ def view_calculation_page(request: Request, calc_id: str):
     Returns:
         HTMLResponse: Rendered template with calculation ID passed to frontend
     """
+    logger.info("inside view_calculation_page")
     return templates.TemplateResponse("view_calculation.html", {"request": request, "calc_id": calc_id})
 
 @app.get("/dashboard/edit/{calc_id}", response_class=HTMLResponse, tags=["web"])
@@ -184,7 +196,9 @@ def register(user_create: UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user account.
     """
+    logger.info("inside register")
     user_data = user_create.dict(exclude={"confirm_password"})
+    logger.debugging(user_data)
     try:
         user = User.register(db, user_data)
         db.commit()

@@ -4,7 +4,7 @@
 Module: operations.py
 
 This module contains basic arithmetic functions that perform addition, subtraction,
-multiplication, and division of two numbers. These functions are foundational for
+multiplication, division, exponentiation, and modulus of two numbers. These functions are foundational for
 building more complex applications, such as calculators or financial tools.
 
 Functions:
@@ -118,3 +118,14 @@ def divide(a: Number, b: Number) -> float:
     # Perform division of a by b and return the result as a float
     result = a / b
     return result
+
+def exponentiate(a: Number, b: Number) -> Number:    
+    if a == 0 and b < 0:
+        raise ValueError("Zero cannot be raised to a negative power")
+    return a ** b
+
+
+def modulus(a: Number, b: Number) -> Number:    
+    if b == 0:
+        raise ValueError("Cannot perform modulus operation with zero!")
+    return a - int(a / b) * b

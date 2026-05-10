@@ -178,6 +178,8 @@ class AbstractCalculation:
             'subtraction': Subtraction,
             'multiplication': Multiplication,
             'division': Division,
+            'exponentiation': Exponentiation,
+            'modulus': Modulus
         }
         calculation_class = calculation_classes.get(calculation_type.lower())
         if not calculation_class:
@@ -353,4 +355,53 @@ class Division(Calculation):
             if value == 0:
                 raise ValueError("Cannot divide by zero.")
             result /= value
+        return result
+
+class Exponentiation(Calculation):
+    """
+    Exponentiation calculation subclass.
+
+    Implements sequential exponentiation.
+    Examples:
+        [3, 2] -> 3 ** 2 = 9
+        [1, 3, 2] -> (1 ** 3) ** 2 = 1
+    """
+    __mapper_args__ = {"polymorphic_identity": "exponentiation"}
+
+    def get_result(self) -> float:
+        if not isinstance(self.inputs, list):
+            raise ValueError("Inputs must be a list of numbers.")
+        if len(self.inputs) < 2:
+            raise ValueError("Inputs must be a list with at least two numbers.")
+
+        result = self.inputs[0]
+        for value in self.inputs[1:]:
+            result = result ** value
+        return result
+
+class Modulus(Calculation):
+    """
+    Modulus calculation subclass.
+
+    Implements sequential modulus.
+    Examples:
+        [10, 3] -> 10 % 3 = 1
+        [100, 30, 4] -> (100 % 30) % 4 = 2
+
+    Special case:
+        - Modulus by zero is not allowed.
+    """
+    __mapper_args__ = {"polymorphic_identity": "modulus"}
+
+    def get_result(self) -> float:
+        if not isinstance(self.inputs, list):
+            raise ValueError("Inputs must be a list of numbers.")
+        if len(self.inputs) < 2:
+            raise ValueError("Inputs must be a list with at least two numbers.")
+
+        result = self.inputs[0]
+        for value in self.inputs[1:]:
+            if value == 0:
+                raise ValueError("Cannot perform modulus operation with zero!")
+            result = result % value
         return result
