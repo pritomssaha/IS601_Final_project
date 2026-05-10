@@ -99,8 +99,8 @@ jobs:
         with:
           push: true
           tags: |
-            pritomssaha/601_module14:latest
-            pritomssaha/601_module14:${{ github.sha }}
+            pritomssaha/IS601_Final_Project:latest
+            pritomssaha/IS601_Final_Project:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=pritomssaha/601_module14:cache
+          cache-from: type=registry,ref=pritomssaha/IS601_Final_Project:cache
           cache-to: type=inline,mode=max
