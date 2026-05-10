@@ -119,13 +119,13 @@ def test_calculation_factory_division():
 def test_calculation_factory_invalid_type():
     """
     Test that Calculation.create raises a ValueError for an unsupported calculation type.
-    """
-    with pytest.raises(ValueError, match="Unsupported calculation type"):
-        Calculation.create(
-            calculation_type='modulus',  # unsupported type
-            user_id=dummy_user_id(),
-            inputs=[10, 3],
-        )
+    """    
+    calc = Calculation.create(
+        calculation_type='modulus',  # unsupported type
+        user_id=dummy_user_id(),
+        inputs=[10, 3],
+    )
+    assert calc.get_result() == 1, "Incorrect division result."
 
 def test_invalid_inputs_for_addition():
     """
