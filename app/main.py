@@ -37,7 +37,7 @@ from app.models.calculation import Calculation  # Database model for calculation
 from app.models.user import User  # Database model for users
 from app.schemas.calculation import CalculationBase, CalculationResponse, CalculationUpdate  # API request/response schemas
 from app.schemas.token import TokenResponse  # API token schema
-from app.schemas.user import UserCreate, UserResponse, UserLogin  # User schemas
+from app.schemas.user import UserCreate, UserResponse, UserLogin, PasswordUpdate  # User schemas
 from app.database import Base, get_db, engine  # Database connection
 import logging
 
@@ -123,6 +123,17 @@ def register_page(request: Request):
     logger.info("inside register_page")
     return templates.TemplateResponse("register.html", {"request": request})
 
+### router for reset password handling
+@app.get("/reset-password", response_class=HTMLResponse, tags=["web"])
+def reset_password_page(request: Request):
+    """
+    Login page.
+    
+    Displays a form for users to enter credentials and log in.
+    """
+    logger.info("inside login_page")
+    return templates.TemplateResponse("reset-password.html", {"request": request})    
+
 @app.get("/dashboard", response_class=HTMLResponse, tags=["web"])
 def dashboard_page(request: Request):
     """
@@ -198,7 +209,7 @@ def register(user_create: UserCreate, db: Session = Depends(get_db)):
     """
     logger.info("inside register")
     user_data = user_create.dict(exclude={"confirm_password"})
-    logger.debugging(user_data)
+    # logger.debugging(user_data)
     try:
         user = User.register(db, user_data)
         db.commit()
@@ -208,6 +219,22 @@ def register(user_create: UserCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
+@app.put("/auth/reset-password", response_model=UserResponse, tags=["auth"])
+def reset_password(
+    password_update: PasswordUpdate,    
+    db: Session = Depends(get_db)
+):    
+    user=db.query(User).filter(
+        User.username == password_update.username
+    ).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    user.password=User.hash_password(password_update.new_password)
+    db.commit()
+    db.refresh(user)
+    logger.info(user)
+    return user  
+    
 
 # ------------------------------------------------------------------------------
 # User Login Endpoints

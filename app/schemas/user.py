@@ -156,13 +156,13 @@ class UserUpdate(BaseModel):
 
 class PasswordUpdate(BaseModel):
     """Schema for password updates"""
-    current_password: str = Field(
-        ...,
-        min_length=8,
-        max_length=128,
-        example="OldPass123!",
-        description="Current password"
+    username: str = Field(
+        min_length=3,
+        max_length=50,
+        example="johndoe",
+        description="User's unique username"
     )
+
     new_password: str = Field(
         ...,
         min_length=8,
@@ -183,14 +183,11 @@ class PasswordUpdate(BaseModel):
         """Verify that new password and confirmation match"""
         if self.new_password != self.confirm_new_password:
             raise ValueError("New password and confirmation do not match")
-        if self.current_password == self.new_password:
-            raise ValueError("New password must be different from current password")
         return self
 
     model_config = ConfigDict(
         json_schema_extra={
-            "example": {
-                "current_password": "OldPass123!",
+            "example": {                
                 "new_password": "NewPass123!",
                 "confirm_new_password": "NewPass123!"
             }
