@@ -318,3 +318,22 @@ def test_model_division():
     with pytest.raises(ValueError):
         calc_zero = Calculation.create("division", dummy_user_id, [100, 0])
         calc_zero.get_result()
+
+def test_model_modulus():
+    dummy_user_id = uuid4()
+    calc = Calculation.create("modulus", dummy_user_id, [9, 2, 3])
+    result = calc.get_result()
+    assert result == 1, f"Addition result incorrect: expected 1, got {result}"
+
+def test_model_exponentiation():
+    dummy_user_id = uuid4()
+    calc = Calculation.create("exponentiation", dummy_user_id, [2, 2, 3])
+    result = calc.get_result()
+    assert result == 64, f"Addition result incorrect: expected 64, got {result}"   
+
+def test_model_modulus_invalid():
+    dummy_user_id = uuid4()  
+    # Mod by zero should error
+    with pytest.raises(ValueError):
+        calc_zero = Calculation.create("modulus", dummy_user_id, [10, 0])
+        calc_zero.get_result()     
